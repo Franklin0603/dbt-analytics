@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+dbt-core = "~=1.7.0"
+dbt-postgres = "~=1.7.0"
+psycopg2-binary = "*"
+sqlfluff = "*"
+sqlfluff-templater-dbt = "*"
+
+[dev-packages]
+pytest = "*"
+black = "*"
+isort = "*"
+pre-commit = "*"
+
+[requires]
+python_version = "3.9"
+
+[scripts]
+lint = "sqlfluff lint models/"
+fix = "sqlfluff fix models/"
+test = "dbt test"
+build = "dbt build"

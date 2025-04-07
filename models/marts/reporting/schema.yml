@@ -1,0 +1,85 @@
+version: 2
+
+models:
+  - name: rpt_order_fulfillment
+    description: Daily order fulfillment metrics and KPIs
+    
+    columns:
+      - name: order_day
+        description: Date of the orders
+        tests:
+          - not_null
+          - unique
+          
+      - name: total_orders
+        description: Total number of orders for the day
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "total_orders > 0"  # ✅ Fixed positive_value issue
+          
+      - name: on_time_delivery_rate
+        description: Percentage of on-time deliveries
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "on_time_delivery_rate BETWEEN 0 AND 100"  # ✅ Fixed range
+
+      - name: shipping_efficiency_score
+        description: Overall shipping efficiency score
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "shipping_efficiency_score BETWEEN 0 AND 100"
+
+      - name: total_line_items
+        description: Total number of line items for the day
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "total_line_items >= total_orders"
+
+      - name: on_time_deliveries
+        description: Number of on-time deliveries
+      - name: late_deliveries
+        description: Number of late deliveries
+      - name: early_deliveries
+        description: Number of early deliveries
+
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "on_time_deliveries + late_deliveries + early_deliveries = total_line_items"
+
+  - name: viz_daily_sales_trends
+    description: Ready-to-visualize daily sales trends
+    columns:
+      - name: order_day
+        description: Date of the orders
+        tests:
+          - not_null
+          - unique
+      - name: revenue
+        description: Daily revenue
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "revenue >= 0"
+      - name: revenue_7day_ma
+        description: 7-day moving average of revenue
+      - name: mtd_revenue
+        description: Month-to-date revenue
+      - name: yoy_growth
+        description: Year-over-year growth percentage
+
+  - name: viz_shipping_performance
+    description: Shipping performance metrics by mode
+    columns:
+      - name: order_day
+        description: Date of the orders
+      - name: shipping_mode
+        description: Mode of shipping (AIR, TRUCK, SHIP, RAIL)
+      - name: avg_delay
+        description: Average delay in days
+      - name: relative_performance
+        description: Performance relative to mode average
+      - name: performance_rank
+        description: Monthly rank by performance

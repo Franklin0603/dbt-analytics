@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: int_tpch_order_items 
+    description: >
+      Intermediate model that joins order data with line items, parts, and suppliers
+      to create a comprehensive view of order items with enriched information about
+      products and suppliers.
+    meta:
+      owner: "Analytics Engineering Team"
+      layer: "intermediate"
+      business_domain: "sales"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - lineitem_id
+            - order_id
+    columns: 
+      - name: lineitem_id 
+        description: "Unique identifier for the line item"
+        tests:
+          - not_null
+      - name: order_id
+        description: "Identifier for the order that this line item belongs to"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_tpch_orders')
+              field: order_id
+      - name: customer_id
+        description: "Identifier for the customer who placed the order"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_tpch__customers')
+              field: customer_id
+      - name: part_id
+        description: "Identifier for the part/product in this line item"
+      - name: supplier_id
+        description: "Identifier for the supplier who provided this part"
+      - name: order_date
+        description: "Date when the order was placed"
+        tests:
+          - not_null
+      - name: discounted_price
+        description: "Price after applying discount, but before tax"
+      - name: final_price
+        description: "Final price after discount and tax"
+      - name: is_shipped_on_time
+        description: "Boolean flag indicating whether the item was shipped on time"
+
+  
+      
