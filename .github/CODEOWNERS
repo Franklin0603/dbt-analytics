@@ -1,0 +1,10 @@
+* @team-data-engineering
+
+# Data models
+/models/ @team-data-engineering
+
+# Documentation
+/docs/ @team-data-engineering @team-analytics
+
+# Tests
+/tests/ @team-data-engineering @team-qa 

@@ -7,7 +7,7 @@
 }}
 
 with customer_profile as (
-    select * from {{ ref('int_tpch_customer_profile')}}
+    select * from {{ ref('int_tpch__customer_profile')}}
 ),
 
 customer_orders as (
@@ -27,10 +27,8 @@ final as (
         -- Natural/business key 
         cp.customer_id,
 
-        -- Custom identity attributes
+        -- Customer attributes
         cp.customer_name,
-        cp.customer_address,
-        cp.phone_number,
         
         -- Geographic attributes
         cp.nation_id,

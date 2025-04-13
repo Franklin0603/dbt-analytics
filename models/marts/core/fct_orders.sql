@@ -10,7 +10,7 @@
 
 with orders as (
     
-    select * from {{ ref('stg_tpch_orders') }}
+    select * from {{ ref('stg_tpch__orders') }}
 
 ),
 
@@ -22,7 +22,7 @@ customers as (
 
 line_items as (
     
-    select * from {{ ref('stg_tpch_lineitem') }}
+    select * from {{ ref('stg_tpch__line_items') }}
 
 ),
 

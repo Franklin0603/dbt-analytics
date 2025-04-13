@@ -1,55 +1,106 @@
 # TPC-H Analytics Project Overview
 
-## Project Purpose
+## Introduction
 
-This dbt project transforms TPC-H dataset into analytics-ready data models that enable business users to perform sales analysis, supply chain optimization, and customer behavior analysis.
+This project implements a modern data warehouse solution using the TPC-H dataset, leveraging dbt (data build tool) for transformation and analytics. The project aims to demonstrate best practices in data modeling, testing, and documentation.
 
-## Data Architecture
+## Project Goals
 
-Our project follows a layered architecture approach:
+- Transform TPC-H source data into analytics-ready models
+- Implement dimensional modeling for efficient querying
+- Establish robust data quality controls
+- Provide comprehensive documentation
+- Enable self-service analytics
 
-1. **Sources**: Raw TPC-H data in PostgreSQL database
-2. **Staging Layer**: Clean, renamed data with minimal transformations
-3. **Intermediate Layer**: Business logic transformations and relationship models
-4. **Mart Layer**: Subject-area specific models for end-user consumption
+## Architecture Overview
 
-## Staging Layer
-
-The staging layer is the foundation of our transformation process. It focuses on:
-
-- Standardizing column names
-- Light data cleansing
-- Type casting
-- Setting up initial tests for data quality
-
-All staging models are prefixed with `stg_` and organized by source system.
-
-## Data Flow Diagram
+### Data Flow
 
 ```
-Source Tables → Staging Models → Intermediate Models → Mart Models
-(Raw Data)      (Clean Data)      (Transformed Data)   (Business Models)
+Source Data (TPC-H)
+    ↓
+Raw Data Layer (Source)
+    ↓
+Staging Layer (Clean & Standardize)
+    ↓
+Intermediate Layer (Business Logic)
+    ↓
+Mart Layer (Analytics Ready)
 ```
+
+### Key Components
+
+1. **Source Layer**
+
+   - TPC-H source tables
+   - Raw data preservation
+   - Source freshness monitoring
+
+2. **Transformation Pipeline**
+
+   - dbt models
+   - Custom macros
+   - Data quality tests
+
+3. **Analytics Layer**
+   - Dimensional models
+   - Fact tables
+   - Reporting views
+
+## Technology Stack
+
+- **Data Warehouse**: PostgreSQL
+- **Transformation**: dbt Core
+- **Version Control**: Git
+- **CI/CD**: GitHub Actions
+- **Documentation**: dbt Docs
 
 ## Project Structure
 
 ```
-models/
-├── staging/           # Standardized source data
-│   ├── stg_tpch/      # TPC-H source data models
-│   └── ...
-├── intermediate/      # Business logic and relationships
-├── marts/             # Business-specific models
-│   ├── core/          # Core business concepts
-│   └── reporting/     # Reporting models
-├── utilities/         # Reusable components
-tests/                 # Custom data tests
-macros/               # Reusable SQL snippets
+tpch_analytics/
+├── models/          # Data transformation models
+├── macros/         # Reusable SQL functions
+├── tests/          # Data quality tests
+├── docs/           # Project documentation
+├── seeds/          # Static data files
+└── snapshots/      # Slowly changing dimensions
 ```
+
+## Key Metrics
+
+1. **Order Analytics**
+
+   - Order volume
+   - Order value
+   - Order fulfillment time
+
+2. **Customer Analytics**
+
+   - Customer segmentation
+   - Purchase patterns
+   - Geographic distribution
+
+3. **Supplier Analytics**
+   - Supplier performance
+   - Supply chain efficiency
+   - Cost analysis
 
 ## Getting Started
 
-1. Set up environment
-2. Configure PostgreSQL connection
-3. Run staging models: `dbt run --models staging`
-4. Validate with tests: `dbt test --models staging`
+1. Review the [Onboarding Guide](onboarding.md)
+2. Explore the [Dimensional Model](../assets/dimensional_model.md)
+3. Read through the Architecture Decision Records (ADRs)
+
+## Development Guidelines
+
+- Follow [Naming Conventions](decisions/adr-001-naming-conventions.md)
+- Implement [Testing Strategy](decisions/adr-003-testing-strategy.md)
+- Use [Incremental Loading](decisions/adr-004-incremental-loading.md)
+
+## Support and Maintenance
+
+- Regular testing and monitoring
+- Performance optimization
+- Documentation updates
+- Team collaboration

@@ -1,0 +1,246 @@
+version: 2
+
+models:
+  - name: stg_tpch__customers
+    description: |
+      Staged customer data with standardized fields and calculated metrics.
+      This model serves as the foundation for customer analytics and segmentation.
+    columns:
+      - name: customer_id
+        description: "Primary key for customer identification"
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: integer
+
+      - name: customer_name
+        description: "Customer's full name"
+        tests:
+          - not_null
+
+      - name: nation_id
+        description: "Foreign key to nations dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_tpch__nations')
+              field: nation_id
+
+      - name: account_balance
+        description: "Current account balance in base currency"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: -1000000
+              max_value: 1000000
+
+      - name: market_segment
+        description: "Customer's market segment classification"
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                [
+                  "AUTOMOBILE",
+                  "BUILDING",
+                  "FURNITURE",
+                  "MACHINERY",
+                  "HOUSEHOLD",
+                ]
+
+  - name: stg_tpch__line_items
+    description: |
+      Staged line item data with price calculations and fulfillment metrics.
+      Core model for order analysis and revenue calculations.
+    columns:
+      - name: order_id
+        description: "Foreign key to orders"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_tpch__orders')
+              field: order_id
+
+      - name: line_number
+        description: "Line item sequence within order"
+        tests:
+          - not_null
+
+      - name: part_id
+        description: "Foreign key to parts"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_tpch__parts')
+              field: part_id
+
+      - name: quantity
+        description: "Quantity ordered"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 100
+
+      - name: extended_price
+        description: "Line item total price before discounts"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: discount
+        description: "Discount percentage as decimal"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: tax
+        description: "Tax rate as decimal"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+  - name: stg_tpch__orders
+    description: |
+      Staged order header information with status tracking and dates.
+      Primary model for order analysis and customer purchase behavior.
+    columns:
+      - name: order_id
+        description: "Primary key for orders"
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        description: "Foreign key to customers"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_tpch__customers')
+              field: customer_id
+
+      - name: order_status
+        description: "Current order status (O=Open, F=Fulfilled, P=Pending)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["O", "F", "P"]
+
+      - name: total_price
+        description: "Total order value including all line items"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: order_date
+        description: "Date when order was placed"
+        tests:
+          - not_null
+
+  - name: stg_tpch__parts
+    description: |
+      Staged product catalog information with categorization and pricing.
+      Core model for product analysis and inventory management.
+    columns:
+      - name: part_id
+        description: "Primary key for parts"
+        tests:
+          - unique
+          - not_null
+
+      - name: retail_price
+        description: "Suggested retail price"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: size_category
+        description: "Size classification (SMALL, MEDIUM, LARGE)"
+        tests:
+          - accepted_values:
+              values: ["SMALL", "MEDIUM", "LARGE"]
+
+  - name: stg_tpch__suppliers
+    description: |
+      Staged supplier information with performance metrics.
+      Used for supplier analysis and supply chain optimization.
+    columns:
+      - name: supplier_id
+        description: "Primary key for suppliers"
+        tests:
+          - unique
+          - not_null
+
+      - name: nation_id
+        description: "Foreign key to nations"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_tpch__nations')
+              field: nation_id
+
+  - name: stg_tpch__part_suppliers
+    description: |
+      Staged part-supplier relationship data with inventory metrics.
+      Critical for supply chain and inventory analysis.
+    columns:
+      - name: part_id
+        description: "Part identifier in composite key"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_tpch__parts')
+              field: part_id
+
+      - name: supplier_id
+        description: "Supplier identifier in composite key"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_tpch__suppliers')
+              field: supplier_id
+
+      - name: available_quantity
+        description: "Current available quantity"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+  - name: stg_tpch__nations
+    description: |
+      Staged nation reference data.
+      Used for geographic analysis and regional reporting.
+    columns:
+      - name: nation_id
+        description: "Primary key for nations"
+        tests:
+          - unique
+          - not_null
+
+      - name: region_id
+        description: "Foreign key to regions"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_tpch__regions')
+              field: region_id
+
+  - name: stg_tpch__regions
+    description: |
+      Staged region reference data.
+      Top-level geographic grouping for reporting.
+    columns:
+      - name: region_id
+        description: "Primary key for regions"
+        tests:
+          - unique
+          - not_null

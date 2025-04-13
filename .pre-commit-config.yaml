@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 2.3.5
+    hooks:
+      - id: sqlfluff-lint
+        additional_dependencies: ["dbt-postgres"]
+      - id: sqlfluff-fix
+        additional_dependencies: ["dbt-postgres"]
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.32.0
+    hooks:
+      - id: yamllint
+        args: [--config-file, .yamllint]
+
+  - repo: local
+    hooks:
+      - id: dbt-compile
+        name: dbt compile
+        entry: dbt compile
+        language: system
+        pass_filenames: false
+        types: [sql]

@@ -1,0 +1,22 @@
+tpch_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      dbname: tpch
+      schema: dbt_dev_{{ env_var('DBT_USER') }}
+      threads: 4
+
+    prod:
+      type: postgres
+      host: "{{ env_var('PROD_HOST') }}"
+      port: 5432
+      user: "{{ env_var('PROD_USER') }}"
+      password: "{{ env_var('PROD_PASSWORD') }}"
+      dbname: tpch_prod
+      schema: analytics
+      threads: 8 

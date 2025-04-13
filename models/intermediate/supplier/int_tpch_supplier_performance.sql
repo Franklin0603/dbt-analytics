@@ -13,12 +13,12 @@ with supplier_orders as (
         l.receipt_date,
         p.retail_price,
         ps.supply_cost
-    from {{ ref('stg_tpch_supplier') }} s
-    inner join {{ ref('stg_tpch_lineitem') }} l
+    from {{ ref('stg_tpch__suppliers') }} s
+    inner join {{ ref('stg_tpch__line_items') }} l
         on s.supplier_id = l.supplier_id
-    inner join {{ ref('stg_tpch_part') }} p
+    inner join {{ ref('stg_tpch__parts') }} p
         on l.part_id = p.part_id
-    inner join {{ ref('stg_tpch_partsupp') }} ps
+    inner join {{ ref('stg_tpch__part_suppliers') }} ps
         on l.part_id = ps.part_id
         and l.supplier_id = ps.supplier_id
 ),
@@ -85,9 +85,9 @@ final as (
         ) as revenue_rank_in_nation
         
     from supplier_metrics sm
-    inner join {{ ref('stg_tpch_nation') }} n
+    inner join {{ ref('stg_tpch__nations') }} n
         on sm.nation_id = n.nation_id
-    inner join {{ ref('stg_tpch_region') }} r
+    inner join {{ ref('stg_tpch__regions') }} r
         on n.region_id = r.region_id
 )
 

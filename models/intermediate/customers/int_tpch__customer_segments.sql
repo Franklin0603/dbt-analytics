@@ -7,7 +7,7 @@
 
 with customer_profile as (
     
-    select * from {{ ref('int_tpch_customer_profile') }}
+    select * from {{ ref('int_tpch__customer_profile') }}
 
 ),
 
