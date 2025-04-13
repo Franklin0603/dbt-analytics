@@ -1,0 +1,8 @@
+region_id,region_code,region_name,region_description,continent,is_active,valid_from,valid_to
+1,NA,NORTH AMERICA,North American Region,North America,true,1900-01-01,9999-12-31
+2,SA,SOUTH AMERICA,South American Region,South America,true,1900-01-01,9999-12-31
+3,EU,EUROPE,European Region,Europe,true,1900-01-01,9999-12-31
+4,AF,AFRICA,African Region,Africa,true,1900-01-01,9999-12-31
+5,AS,ASIA,Asian Region,Asia,true,1900-01-01,9999-12-31
+6,OC,OCEANIA,Oceania Region,Oceania,true,1900-01-01,9999-12-31
+7,AN,ANTARCTICA,Antarctic Region,Antarctica,false,1900-01-01,9999-12-31 

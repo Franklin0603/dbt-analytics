@@ -1,0 +1,8 @@
+mode_id,mode_code,mode_name,description,estimated_days,cost_multiplier,is_active,valid_from,valid_to
+1,REG,REGULAR,Standard shipping service,5,1.00,true,2022-01-01,9999-12-31
+2,EXP,EXPRESS,Express shipping service,2,1.50,true,2022-01-01,9999-12-31
+3,AIR,AIR,Air freight service,1,2.00,true,2022-01-01,9999-12-31
+4,MAIL,MAIL,Postal service,7,0.75,true,2022-01-01,9999-12-31
+5,FOB,FOB,Free on board shipping,3,1.25,true,2022-01-01,9999-12-31
+6,TRUCK,TRUCK,Ground transportation,4,0.90,true,2022-01-01,9999-12-31
+7,RAIL,RAIL,Rail freight service,6,0.80,true,2022-01-01,9999-12-31 

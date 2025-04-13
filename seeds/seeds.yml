@@ -1,0 +1,85 @@
+version: 2
+
+seeds:
+  - name: ref_calendar
+    description: Reference calendar data with date attributes and fiscal calendar mapping
+    config:
+      tags: ["reference", "calendar"]
+    columns:
+      - name: date_id
+        description: Unique identifier for each date in YYYYMMDD format
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: "^[0-9]{8}$"
+      - name: date
+        description: Calendar date
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: "2022-01-01"
+              max_value: "2023-12-31"
+      - name: is_weekend
+        description: Flag indicating if the date falls on a weekend
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: [true, false]
+
+  - name: ref_regions
+    description: Reference data for geographical regions
+    config:
+      tags: ["reference", "geography"]
+    columns:
+      - name: region_id
+        description: Unique identifier for each region
+        tests:
+          - unique
+          - not_null
+      - name: region_code
+        description: Two-letter region code
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: "^[A-Z]{2}$"
+      - name: valid_from
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: "1900-01-01"
+              max_value: "9999-12-31"
+
+  - name: shipping_modes
+    description: Reference data for shipping modes and their attributes
+    config:
+      tags: ["static", "shipping"]
+    columns:
+      - name: mode_id
+        description: Unique identifier for each shipping mode
+        tests:
+          - unique
+          - not_null
+      - name: mode_code
+        description: Unique code for each shipping mode
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: "^[A-Z]{3,4}$"
+      - name: cost_multiplier
+        description: Cost multiplier for the shipping mode
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 5
+      - name: estimated_days
+        description: Estimated delivery days
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 30
