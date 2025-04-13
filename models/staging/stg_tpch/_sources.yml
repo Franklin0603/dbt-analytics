@@ -4,31 +4,19 @@ sources:
   - name: tpch
     database: tpch  # change this if your database name is different
     schema: public  # change this to your raw data schema
-    freshness:
-      warn_after: {count: 24, period: hour}
-      error_after: {count: 48, period: hour}
-    loaded_at_field: "created_at" # Update with your actual timestamp field
     
     
     tables:
       - name: customer
         
-        loaded_at_field: _loaded_at  # if you have this
         columns:
           - name: c_custkey
             tests:
               - not_null
               - unique
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
         
       - name: lineitem
         description: "Line item records for all orders"
-        loaded_at_field: _loaded_at
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
         columns:
           - name: l_orderkey
             tests:
@@ -42,9 +30,6 @@ sources:
         
       - name: orders
         description: "Customer orders"
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
         columns:
           - name: o_orderkey
             tests:

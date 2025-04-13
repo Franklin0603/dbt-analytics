@@ -8,20 +8,20 @@ daily_sales AS (
         count(distinct order_id) AS total_orders,
         count(*) AS total_line_items,
         sum(quantity) AS total_quantity,
-        sum(base_price) AS total_base_price,
-        sum(discount_amount) AS total_discounts,
-        sum(tax_amount) AS total_tax,
+        sum(extended_price) AS total_base_price,
+        sum(extended_price * discount) AS total_discounts,
+        sum(discounted_price * tax) AS total_tax,
         sum(final_price) AS total_sales,
-        sum(gross_margin) AS total_margin,
+        sum(final_price - (quantity * extended_price / quantity)) AS total_margin,
 
         -- Averages
         avg(final_price) AS avg_order_value,
-        avg(margin_percentage) AS avg_margin_percentage,
+        avg((final_price - (quantity * extended_price / quantity)) / final_price * 100) AS avg_margin_percentage,
 
         -- Delivery metrics
-        avg(ship_delay) AS avg_ship_delay,
-        sum(case when delivery_status = 'LATE' then 1 else 0 end) AS late_deliveries,
-        sum(case when delivery_status = 'EARLY' then 1 else 0 end) AS early_deliveries,
+        avg(CASE WHEN is_shipped_on_time THEN 0 ELSE 1 END) AS avg_ship_delay,
+        sum(case when is_shipped_on_time = false then 1 else 0 end) AS late_deliveries,
+        sum(case when is_shipped_on_time = true then 1 else 0 end) AS on_time_or_early_deliveries,
 
         -- Additional time-based metrics
         date_part('dow', order_date) AS day_of_week,

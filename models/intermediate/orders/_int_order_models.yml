@@ -32,7 +32,7 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('stg_tpch__customers')
+              to: ref('stg_tpch_customer')
               field: customer_id
       - name: part_id
         description: "Identifier for the part/product in this line item"
