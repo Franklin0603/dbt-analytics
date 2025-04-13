@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: int_supplier_performance
+    description: Supplier performance metrics and ratings
+    columns:
+      - name: supplier_id
+        description: Primary key from suppliers
+        tests:
+          - unique
+          - not_null
+      - name: total_parts_supplied
+        description: Total number of unique parts supplied
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: total_orders_fulfilled
+        description: Total number of orders fulfilled
+        tests:
+          - not_null
+      - name: avg_delivery_days
+        description: Average days to deliver orders
+        tests:
+          - not_null
+      - name: on_time_delivery_rate
+        description: Percentage of on-time deliveries
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+      - name: quality_rating
+        description: Overall quality rating
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+
+  - name: int_supplier_parts
+    description: Supplier-part relationships and inventory metrics
+    columns:
+      - name: supplier_part_id
+        description: Unique identifier for supplier-part combination
+        tests:
+          - unique
+          - not_null
+      - name: supplier_id
+        description: Foreign key to suppliers
+        tests:
+          - not_null
+      - name: part_id
+        description: Foreign key to parts
+        tests:
+          - not_null
+      - name: available_quantity
+        description: Current available quantity
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: supply_cost
+        description: Unit supply cost
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: is_preferred_supplier
+        description: Flag indicating preferred supplier status
+        tests:
+          - not_null

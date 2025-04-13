@@ -1,4 +1,4 @@
-{% macro test_referential_integrity(model, column_name, reference_model, reference_column_name) %}
+{% macro test_ref_integrity(model, column_name, reference_model, reference_column_name) %}
     WITH parent AS (
         SELECT DISTINCT {{ reference_column_name }} as id
         FROM {{ reference_model }}
