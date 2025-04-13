@@ -4,19 +4,19 @@
 ) }}
 
 with orders as (
-    select * from {{ ref('stg_tpch_orders') }}
+    select * from {{ ref('stg_tpch__orders') }}
 ),
 
 line_items as (
-    select * from {{ ref('stg_tpch_lineitem') }}
+    select * from {{ ref('stg_tpch__line_items') }}
 ),
 
 parts as (
-    select * from {{ ref('stg_tpch_part')}}
+    select * from {{ ref('stg_tpch__parts')}}
 ),
 
 suppliers as (
-    select * from {{ ref('stg_tpch_supplier')}}
+    select * from {{ ref('stg_tpch__suppliers')}}
 ),
 
 -- join orders with line items and enrich with part and supplier data

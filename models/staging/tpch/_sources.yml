@@ -1,0 +1,180 @@
+version: 2
+
+sources:
+  - name: tpch
+    description: "TPC-H benchmark dataset representing a realistic e-commerce/supply chain database"
+    database: tpch
+    schema: public
+    loader: custom # specify your actual data loader
+    tables:
+      - name: customer
+        description: "Customer master data including demographics and account information"
+        loaded_at_field: _etl_loaded_at
+        freshness:
+          warn_after: { count: 24, period: hour }
+          error_after: { count: 48, period: hour }
+        columns:
+          - name: c_custkey
+            description: "Primary key for customer"
+            tests:
+              - not_null
+              - unique
+          - name: c_name
+            description: "Customer name"
+            tests:
+              - not_null
+          - name: c_acctbal
+            description: "Customer account balance"
+            tests:
+              - not_null
+              - dbt_utils.accepted_range:
+                  min_value: -1000
+                  max_value: 10000
+
+      - name: lineitem
+        description: "Detailed line items for all orders"
+        loaded_at_field: _etl_loaded_at
+        freshness:
+          warn_after: { count: 12, period: hour }
+          error_after: { count: 24, period: hour }
+        columns:
+          - name: l_orderkey
+            description: "Foreign key to orders"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('tpch', 'orders')
+                  field: o_orderkey
+          - name: l_partkey
+            description: "Foreign key to part"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('tpch', 'part')
+                  field: p_partkey
+          - name: l_suppkey
+            description: "Foreign key to supplier"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('tpch', 'supplier')
+                  field: s_suppkey
+          - name: l_quantity
+            description: "Quantity ordered"
+            tests:
+              - not_null
+              - dbt_utils.accepted_range:
+                  min_value: 0
+                  max_value: 50
+
+      - name: orders
+        description: "Order header information"
+        loaded_at_field: _etl_loaded_at
+        freshness:
+          warn_after: { count: 12, period: hour }
+          error_after: { count: 24, period: hour }
+        columns:
+          - name: o_orderkey
+            description: "Primary key for orders"
+            tests:
+              - not_null
+              - unique
+          - name: o_custkey
+            description: "Foreign key to customer"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('tpch', 'customer')
+                  field: c_custkey
+          - name: o_orderstatus
+            description: "Order status (O=Open, F=Fulfilled, P=Pending)"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["O", "F", "P"]
+          - name: o_totalprice
+            description: "Total order price"
+            tests:
+              - not_null
+              - dbt_utils.accepted_range:
+                  min_value: 0
+
+      - name: part
+        description: "Product catalog information"
+        columns:
+          - name: p_partkey
+            description: "Primary key for part"
+            tests:
+              - not_null
+              - unique
+          - name: p_retailprice
+            description: "Suggested retail price"
+            tests:
+              - not_null
+              - dbt_utils.accepted_range:
+                  min_value: 0
+
+      - name: supplier
+        description: "Supplier master data"
+        columns:
+          - name: s_suppkey
+            description: "Primary key for supplier"
+            tests:
+              - not_null
+              - unique
+          - name: s_nationkey
+            description: "Foreign key to nation"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('tpch', 'nation')
+                  field: n_nationkey
+
+      - name: nation
+        description: "Reference table for nations"
+        columns:
+          - name: n_nationkey
+            description: "Primary key for nation"
+            tests:
+              - not_null
+              - unique
+          - name: n_regionkey
+            description: "Foreign key to region"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('tpch', 'region')
+                  field: r_regionkey
+
+      - name: region
+        description: "Reference table for regions"
+        columns:
+          - name: r_regionkey
+            description: "Primary key for region"
+            tests:
+              - not_null
+              - unique
+
+      - name: partsupp
+        description: "Part-supplier relationship with inventory and pricing"
+        columns:
+          - name: ps_partkey
+            description: "Part key (composite key with ps_suppkey)"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('tpch', 'part')
+                  field: p_partkey
+          - name: ps_suppkey
+            description: "Supplier key (composite key with ps_partkey)"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('tpch', 'supplier')
+                  field: s_suppkey
+          - name: ps_availqty
+            description: "Available quantity"
+            tests:
+              - not_null
+              - dbt_utils.accepted_range:
+                  min_value: 0

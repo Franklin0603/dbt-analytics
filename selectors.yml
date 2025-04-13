@@ -1,0 +1,28 @@
+selectors:
+  - name: staging_models
+    definition:
+      method: tag
+      value: staging
+
+  - name: mart_models
+    definition:
+      method: tag
+      value: mart
+
+  - name: critical_models
+    definition:
+      union:
+        - method: tag
+          value: critical
+        - method: tag
+          value: core
+
+  - name: daily_models
+    definition:
+      method: tag
+      value: daily
+
+  - name: test_coverage
+    definition:
+      method: test_type
+      value: schema

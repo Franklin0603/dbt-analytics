@@ -6,11 +6,11 @@
 }}
 
 with orders as (
-    select * from {{ ref("stg_tpch_orders") }}
+    select * from {{ ref("stg_tpch__orders") }}
 ),
 
 line_items as (
-    select * from {{ ref("stg_tpch_lineitem") }}
+    select * from {{ ref("stg_tpch__line_items") }}
 ),
 
 -- Aggregate line items to order level
@@ -20,11 +20,11 @@ order_summaries as (
         count(*) as number_of_items,
         sum(quantity) as total_quantity,
         sum(extended_price) as total_extended_price,
-        sum(discounted_price) as total_discounted_price,
-        sum(final_price) as total_final_price,
+        sum(extended_price * (1 - discount)) as total_discounted_price,
+        sum(extended_price * (1 - discount) * (1 + tax)) as total_final_price,
         min(ship_date) as earliest_ship_date,
         max(ship_date) as latest_ship_date,
-        count(case when is_shipped_on_time then 1 end)::decimal / nullif(count(*), 0) as on_time_shipping_rate
+        count(case when ship_date <= commit_date then 1 end)::decimal / nullif(count(*), 0) as on_time_shipping_rate
     from line_items
     group by 1
 ),
@@ -72,11 +72,10 @@ customer_order_metrics as (
         avg(os.on_time_shipping_rate) as avg_on_time_shipping_rate,
 
         -- Status distribution
-        count(distinct case when orders.order_status = 'Fulfilled' then orders.order_id end)::decimal / nullif(count(distinct orders.order_id), 0) as fulfilled_order_ratio,
+        count(distinct case when orders.order_status = 'F' then orders.order_id end)::decimal / nullif(count(distinct orders.order_id), 0) as fulfilled_order_ratio,
 
         -- Shipping time metrics
         avg(os.latest_ship_date - orders.order_date) as avg_days_to_ship,
-
 
         -- Metadata
         current_timestamp as dbt_updated_at
