@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: int_shipping_performance
+    description: Shipping and delivery performance metrics
+    columns:
+      - name: order_id
+        description: Primary key from orders
+        tests:
+          - unique
+          - not_null
+      - name: shipping_mode
+        description: Mode of shipping
+        tests:
+          - not_null
+      - name: actual_shipping_days
+        description: Actual days taken for shipping
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: estimated_shipping_days
+        description: Estimated shipping days
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: shipping_delay_days
+        description: Delay in shipping (actual - estimated)
+        tests:
+          - not_null
+      - name: is_delayed
+        description: Flag indicating if shipment was delayed
+        tests:
+          - not_null
+      - name: delivery_status
+        description: Current delivery status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["In Transit", "Delivered", "Delayed", "Lost"]
+
+  - name: int_shipping_costs
+    description: Shipping cost analysis
+    columns:
+      - name: order_id
+        description: Primary key from orders
+        tests:
+          - unique
+          - not_null
+      - name: base_shipping_cost
+        description: Base cost of shipping
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: additional_charges
+        description: Any additional shipping charges
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: total_shipping_cost
+        description: Total cost of shipping
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: shipping_cost_ratio
+        description: Shipping cost as percentage of order value
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1

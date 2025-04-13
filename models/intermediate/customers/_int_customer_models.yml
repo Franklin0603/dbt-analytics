@@ -1,8 +1,8 @@
-version 2: 
+version 2:
 
 models:
-  - name: int_tpch_customer_profile 
-    description: > 
+  - name: int_tpch_customer_profile
+    description: >
       Customer profile model that combines customer attributes with
       geographic information and derived attributes. This model serves
       as the foundation for customer analysis and enriches the raw
@@ -11,17 +11,17 @@ models:
       owner: "Analytics Engineering Team"
       layer: "intermediate"
       business_domain: "customer"
-    columns: 
-      - name: customer_id 
+    columns:
+      - name: customer_id
         description: "Unique identifier for the customer"
-        tests: 
-          - not_null 
-          - unique 
-      - name: customer_name 
+        tests:
+          - not_null
+          - unique
+      - name: customer_name
         description: "Full name of the customer"
-        tests: 
-          - not_null 
-      - name: nation_id 
+        tests:
+          - not_null
+      - name: nation_id
         description: "Foreign key to nation dimension"
       - name: nation_name
         description: "Name of the nation where the customer is located"
@@ -35,7 +35,7 @@ models:
         description: "Classification of the customer's account balance (negative, zero, low, medium, high)"
         tests:
           - accepted_values:
-              values: ['negative', 'zero', 'low', 'medium', 'high']
+              values: ["negative", "zero", "low", "medium", "high"]
       - name: dbt_updated_at
         description: "Timestamp of when this record was last updated"
 
@@ -123,22 +123,47 @@ models:
         description: "Customer lifecycle stage based on order history and recency"
         tests:
           - accepted_values:
-              values: ['New', 'Active', 'Loyal', 'At Risk', 'Churning', 'Inactive', 'Unknown']
+              values:
+                [
+                  "New",
+                  "Active",
+                  "Loyal",
+                  "At Risk",
+                  "Churning",
+                  "Inactive",
+                  "Unknown",
+                ]
       - name: purchase_frequency_segment
         description: "Segmentation based on order frequency in last 12 months"
         tests:
           - accepted_values:
-              values: ['Inactive', 'One-time', 'Occasional', 'Regular', 'Frequent', 'Unknown']
+              values:
+                [
+                  "Inactive",
+                  "One-time",
+                  "Occasional",
+                  "Regular",
+                  "Frequent",
+                  "Unknown",
+                ]
       - name: aov_segment
         description: "Segmentation based on average order value"
         tests:
           - accepted_values:
-              values: ['Low AOV', 'Medium AOV', 'High AOV', 'Very High AOV', 'Unknown']
+              values:
+                [
+                  "Low AOV",
+                  "Medium AOV",
+                  "High AOV",
+                  "Very High AOV",
+                  "Unknown",
+                ]
       - name: customer_value_tier
         description: "Customer value classification based on RFM score"
         tests:
           - accepted_values:
-              values: ['High Value', 'Medium Value', 'Low Value', 'Very Low Value']
+              values:
+                ["High Value", "Medium Value", "Low Value", "Very Low Value"]
       - name: business_segment
         description: "Combined business segment for targeting and personalization"
       - name: dbt_updated_at

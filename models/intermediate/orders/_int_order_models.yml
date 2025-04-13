@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: int_tpch_order_items 
+  - name: int_tpch_order_items
     description: >
       Intermediate model that joins order data with line items, parts, and suppliers
       to create a comprehensive view of order items with enriched information about
@@ -15,8 +15,8 @@ models:
           combination_of_columns:
             - lineitem_id
             - order_id
-    columns: 
-      - name: lineitem_id 
+    columns:
+      - name: lineitem_id
         description: "Unique identifier for the line item"
         tests:
           - not_null
@@ -48,6 +48,3 @@ models:
         description: "Final price after discount and tax"
       - name: is_shipped_on_time
         description: "Boolean flag indicating whether the item was shipped on time"
-
-  
-      
