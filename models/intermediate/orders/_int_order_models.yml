@@ -1,50 +1,122 @@
 version: 2
 
 models:
-  - name: int_tpch_order_items
-    description: >
-      Intermediate model that joins order data with line items, parts, and suppliers
-      to create a comprehensive view of order items with enriched information about
-      products and suppliers.
-    meta:
-      owner: "Analytics Engineering Team"
-      layer: "intermediate"
-      business_domain: "sales"
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - lineitem_id
-            - order_id
+  - name: int_tpch__order_items
+    description: Enriched order line items with detailed product, supplier, and shipping information
+    config:
+      tags: ["intermediate", "orders", "daily"]
     columns:
-      - name: lineitem_id
-        description: "Unique identifier for the line item"
+      - name: order_item_id
+        description: Unique identifier for each order line item
         tests:
+          - unique
           - not_null
+
       - name: order_id
-        description: "Identifier for the order that this line item belongs to"
+        description: Foreign key to orders
         tests:
           - not_null
           - relationships:
-              to: ref('stg_tpch_orders')
+              to: ref('stg_tpch__orders')
               field: order_id
-      - name: customer_id
-        description: "Identifier for the customer who placed the order"
+
+      - name: part_id
+        description: Foreign key to parts
         tests:
           - not_null
           - relationships:
-              to: ref('stg_tpch_customer')
-              field: customer_id
-      - name: part_id
-        description: "Identifier for the part/product in this line item"
+              to: ref('stg_tpch__parts')
+              field: part_id
+
       - name: supplier_id
-        description: "Identifier for the supplier who provided this part"
-      - name: order_date
-        description: "Date when the order was placed"
+        description: Foreign key to suppliers
         tests:
           - not_null
-      - name: discounted_price
-        description: "Price after applying discount, but before tax"
-      - name: final_price
-        description: "Final price after discount and tax"
-      - name: is_shipped_on_time
-        description: "Boolean flag indicating whether the item was shipped on time"
+          - relationships:
+              to: ref('stg_tpch__supplier')
+              field: supplier_id
+
+      - name: delivery_status
+        description: Current delivery status of the line item
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["In Transit", "On Time", "Delayed"]
+
+      - name: is_fulfilled_successfully
+        description: Flag indicating successful fulfillment
+        tests:
+          - not_null
+
+  - name: int_tpch__order_metrics
+    description: Order-level metrics including financial and fulfillment indicators
+    config:
+      tags: ["intermediate", "orders", "daily"]
+    columns:
+      - name: order_id
+        description: Primary key from orders
+        tests:
+          - unique
+          - not_null
+
+      - name: total_line_items
+        description: Total number of line items in the order
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+
+      - name: total_final_price
+        description: Total final price including discounts and taxes
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: fulfillment_rate
+        description: Percentage of successfully fulfilled line items
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+  - name: int_tpch__order_fulfillment
+    description: Detailed order fulfillment and shipping analysis
+    config:
+      tags: ["intermediate", "orders", "fulfillment", "daily"]
+    columns:
+      - name: order_id
+        description: Primary key from orders
+        tests:
+          - unique
+          - not_null
+
+      - name: fulfillment_status
+        description: Overall fulfillment status of the order
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                [
+                  "In Progress",
+                  "Severely Delayed",
+                  "Delayed",
+                  "Completed On Time",
+                  "Unknown",
+                ]
+
+      - name: delivery_risk_level
+        description: Risk assessment based on delay metrics
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["No Risk", "Low Risk", "Medium Risk", "High Risk"]
+
+      - name: on_time_delivery_rate
+        description: Percentage of items delivered on time
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
