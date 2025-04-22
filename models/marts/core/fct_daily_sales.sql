@@ -1,5 +1,5 @@
 WITH order_items AS (
-    SELECT * FROM {{ ref('int_tpch_order_items') }}
+    SELECT * FROM {{ ref('int_tpch__order_items') }}
 ),
 
 daily_sales AS (

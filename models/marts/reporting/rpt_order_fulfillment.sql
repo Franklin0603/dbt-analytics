@@ -1,6 +1,6 @@
 -- models/marts/reporting/rpt_order_fulfillment.sql
 with order_items as (
-    select * from {{ ref('int_tpch_order_items') }}
+    select * from {{ ref('int_tpch__order_items') }}
 ),
 
 daily_fulfillment as (
